@@ -1,0 +1,21 @@
+{
+  "name": "eventboss",
+  "version": "1.0.0",
+  "description": "AirHelp Event Bus",
+  "main": "index.js",
+  "repository": "https://github.com/AirHelp/eventboss-js",
+  "author": "Marcin Naglik",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.7.16",
+    "jest": "^18.0.0",
+    "string": "^3.3.3"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.10.3"
+  }
+}
