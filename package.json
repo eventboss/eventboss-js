@@ -1,7 +1,7 @@
 {
   "name": "eventboss",
   "version": "1.0.0",
-  "description": "AirHelp Event Bus",
+  "description": "Eventboss",
   "main": "index.js",
   "repository": "https://github.com/AirHelp/eventboss-js",
   "author": "Marcin Naglik",
