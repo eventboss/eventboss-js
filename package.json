@@ -1,6 +1,6 @@
 {
   "name": "eventboss",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Eventboss",
   "main": "index.js",
   "repository": "https://github.com/AirHelp/eventboss-js",
@@ -8,8 +8,7 @@
   "license": "MIT",
   "dependencies": {
     "aws-sdk": "^2.7.16",
-    "jest": "^18.0.0",
-    "string": "^3.3.3"
+    "jest": "^24.9.0"
   },
   "devDependencies": {
     "eslint": "^4.18.2",

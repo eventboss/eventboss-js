@@ -1,11 +1,8 @@
-const S = require('string');
 const aws = require('aws-sdk');
 
-const normalizedString = str => S(str).camelize().underscore();
-
-const calculateTopicName = (appName, environment, eventName) => `eventboss-${normalizedString(appName)}-${normalizedString(eventName)}-${environment}`;
+const calculateTopicName = (appName, environment, eventName) => `eventboss-${appName}-${eventName}-${environment}`;
 const calculateTopicArn = (accountId, region, topicName) => `arn:aws:sns:${region}:${accountId}:${topicName}`;
-const calculateQueueName = (appName, srcAppName, environment, eventName) => `${normalizedString(appName)}-eventboss-${normalizedString(srcAppName)}-${normalizedString(eventName)}-${environment}`;
+const calculateQueueName = (appName, srcAppName, environment, eventName) => `${appName}-eventboss-${srcAppName}-${eventName}-${environment}`;
 const calculateQueueUrl = (accountId, region, queueName) => `https://sqs.${region}.amazonaws.com/${accountId}/${queueName}`;
 
 const createTopicIfNeeded = function (sns, arn, topicName, autoCreate, doneHandler) {
