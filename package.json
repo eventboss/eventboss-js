@@ -9,7 +9,7 @@
   "dependencies": {
     "aws-sdk": "^2.7.16",
     "jest": "^18.0.0",
-    "string": "^3.3.3"
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
     "eslint": "^4.18.2",

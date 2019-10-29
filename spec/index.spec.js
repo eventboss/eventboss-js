@@ -17,12 +17,12 @@ describe('Eventboss', () => {
         };
       });
 
-      const publisher = Eventboss({ accountId: '1234', region: 'us-west-2', appName: 'appName' }).publisher('event-name');
+      const publisher = Eventboss({ accountId: '1234', region: 'us-west-2', appName: 'app-name' }).publisher('event_name');
       publisher.publish({});
 
       expect(aws.SNS.prototype.publish).toBeCalledWith({
         Message: '{}',
-        TopicArn: 'arn:aws:sns:us-west-2:1234:eventboss-app_name-event_name-development',
+        TopicArn: 'arn:aws:sns:us-west-2:1234:eventboss-app-name-event_name-development',
       });
       expect(then).toBeCalled();
     });
@@ -32,9 +32,9 @@ describe('Eventboss', () => {
         callback(null, null);
       };
       aws.SNS.prototype.createTopic = jest.fn();
-      const publisher = Eventboss({ accountId: '1234', region: 'us-west-2', appName: 'appName', autoCreate: true }).publisher('event-name');
+      const publisher = Eventboss({ accountId: '1234', region: 'us-west-2', appName: 'app-name', autoCreate: true }).publisher('event_name');
       publisher.publish({});
-      expect(aws.SNS.prototype.createTopic).toBeCalledWith({ Name: 'eventboss-app_name-event_name-development' }, expect.any(Function));
+      expect(aws.SNS.prototype.createTopic).toBeCalledWith({ Name: 'eventboss-app-name-event_name-development' }, expect.any(Function));
     });
 
     it('does not create topic if not autoCreate', () => {
@@ -42,7 +42,7 @@ describe('Eventboss', () => {
         callback(null, null);
       };
       aws.SNS.prototype.createTopic = jest.fn();
-      const publisher = Eventboss({ accountId: '1234', region: 'us-west-2', appName: 'appName', autoCreate: false }).publisher('event-name');
+      const publisher = Eventboss({ accountId: '1234', region: 'us-west-2', appName: 'app-name', autoCreate: false }).publisher('event_name');
       publisher.publish({});
       expect(aws.SNS.prototype.createTopic).not.toBeCalled();
     });
@@ -65,9 +65,9 @@ describe('Eventboss', () => {
         };
       });
 
-      const consumer = Eventboss({ accountId: '1234', region: 'us-west-2', appName: 'appName' }).consumer('srcAppName', 'event-name');
+      const consumer = Eventboss({ accountId: '1234', region: 'us-west-2', appName: 'app-name' }).consumer('src-app-name', 'event_name');
       consumer.listen(() => {}, () => {});
-      expect(aws.SQS.prototype.receiveMessage).toBeCalledWith({ QueueUrl: 'https://sqs.us-west-2.amazonaws.com/1234/app_name-eventboss-src_app_name-event_name-undefined', WaitTimeSeconds: 20 });
+      expect(aws.SQS.prototype.receiveMessage).toBeCalledWith({ QueueUrl: 'https://sqs.us-west-2.amazonaws.com/1234/app-name-eventboss-src-app-name-event_name-undefined', WaitTimeSeconds: 20 });
     });
   });
 });
