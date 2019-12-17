@@ -1,8 +1,8 @@
 const aws = require('aws-sdk');
 
-const calculateTopicName = (appName, environment, eventName) => `eventboss-${appName}-${eventName}-${environment}`;
+const calculateTopicName = (appName, environment, eventName, nameInfix) => `${nameInfix}-${appName}-${eventName}-${environment}`;
 const calculateTopicArn = (accountId, region, topicName) => `arn:aws:sns:${region}:${accountId}:${topicName}`;
-const calculateQueueName = (appName, srcAppName, environment, eventName) => `${appName}-eventboss-${srcAppName}-${eventName}-${environment}`;
+const calculateQueueName = (appName, srcAppName, environment, eventName, nameInfix) => `${appName}-${nameInfix}-${srcAppName}-${eventName}-${environment}`;
 const calculateQueueUrl = (accountId, region, queueName) => `https://sqs.${region}.amazonaws.com/${accountId}/${queueName}`;
 
 const createTopicIfNeeded = function (sns, arn, topicName, autoCreate, doneHandler) {
@@ -21,13 +21,13 @@ const createTopicIfNeeded = function (sns, arn, topicName, autoCreate, doneHandl
   }
 };
 
-function Eventboss({ accountId, region, appName, environment, autoCreate }) {
+function Eventboss({ accountId, region, appName, environment, autoCreate, nameInfix = 'eventboss' }) {
   const sns = new aws.SNS({ region });
   const sqs = new aws.SQS({ region });
 
   return {
     consumer(srcAppName, eventName) {
-      const queueName = calculateQueueName(appName, srcAppName, environment, eventName);
+      const queueName = calculateQueueName(appName, srcAppName, environment, eventName, nameInfix);
       const queueUrl = calculateQueueUrl(accountId, region, queueName);
 
       return {
@@ -55,7 +55,7 @@ function Eventboss({ accountId, region, appName, environment, autoCreate }) {
       };
     },
     publisher(eventName) {
-      const topicName = calculateTopicName(appName, environment || 'development', eventName);
+      const topicName = calculateTopicName(appName, environment || 'development', eventName, nameInfix);
       const topicArn = calculateTopicArn(accountId, region, topicName);
 
       return {
