@@ -3,20 +3,42 @@ const Eventboss = require('../index');
 jest.mock('aws-sdk');
 const aws = require('aws-sdk');
 
+function mockSnsPublisher() {
+  const then = jest.fn();
+  aws.SNS.prototype.publish = jest.fn(() => {
+    return {
+      promise() {
+        return {
+          then,
+        };
+      },
+    };
+  });
+  return then;
+}
+
+function mockSqsListiner() {
+  const then = jest.fn(() => {
+    return {
+      catch: jest.fn(),
+    };
+  });
+  aws.SQS.prototype.receiveMessage = jest.fn(() => {
+    return {
+      promise() {
+        return {
+          then,
+        };
+      },
+    };
+  });
+  return then;
+}
+
 describe('Eventboss', () => {
   describe('publish', () => {
     it('sends stringified message to proper eventboss topic', () => {
-      const then = jest.fn();
-      aws.SNS.prototype.publish = jest.fn(() => {
-        return {
-          promise() {
-            return {
-              then,
-            };
-          },
-        };
-      });
-
+      const successCallback = mockSnsPublisher();
       const publisher = Eventboss({ accountId: '1234', region: 'us-west-2', appName: 'app-name' }).publisher('event_name');
       publisher.publish({});
 
@@ -24,7 +46,20 @@ describe('Eventboss', () => {
         Message: '{}',
         TopicArn: 'arn:aws:sns:us-west-2:1234:eventboss-app-name-event_name-development',
       });
-      expect(then).toBeCalled();
+      expect(successCallback).toBeCalled();
+    });
+
+    it('sends message to custom SNS topic', () => {
+      const successCallback = mockSnsPublisher();
+
+      const publisher = Eventboss({ accountId: '1234', region: 'us-west-2', appName: 'app-name', nameInfix: 'event_ah' }).publisher('event_name');
+      publisher.publish({});
+
+      expect(aws.SNS.prototype.publish).toBeCalledWith({
+        Message: '{}',
+        TopicArn: 'arn:aws:sns:us-west-2:1234:event_ah-app-name-event_name-development',
+      });
+      expect(successCallback).toBeCalled();
     });
 
     it('creates topic if autoCreate is set', () => {
@@ -50,24 +85,12 @@ describe('Eventboss', () => {
 
   describe('listen', () => {
     it('calls receive message with queue url and wait time with 20 seconds', () => {
-      const then = jest.fn(() => {
-        return {
-          catch: jest.fn(),
-        };
-      });
-      aws.SQS.prototype.receiveMessage = jest.fn(() => {
-        return {
-          promise() {
-            return {
-              then,
-            };
-          },
-        };
-      });
+      const successCallback = mockSqsListiner();
 
-      const consumer = Eventboss({ accountId: '1234', region: 'us-west-2', appName: 'app-name' }).consumer('src-app-name', 'event_name');
+      const consumer = Eventboss({ accountId: '1234', region: 'us-west-2', appName: 'app-name', environment: 'integration', nameInfix: 'event_ah' }).consumer('src-app-name', 'event_name');
       consumer.listen(() => {}, () => {});
-      expect(aws.SQS.prototype.receiveMessage).toBeCalledWith({ QueueUrl: 'https://sqs.us-west-2.amazonaws.com/1234/app-name-eventboss-src-app-name-event_name-undefined', WaitTimeSeconds: 20 });
+      expect(aws.SQS.prototype.receiveMessage).toBeCalledWith({ QueueUrl: 'https://sqs.us-west-2.amazonaws.com/1234/app-name-event_ah-src-app-name-event_name-integration', WaitTimeSeconds: 20 });
+      expect(successCallback).toBeCalled();
     });
   });
 });
