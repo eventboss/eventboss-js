@@ -43,8 +43,8 @@ function Eventboss({ accountId, region, appName, environment, autoCreate, nameIn
                 }
                 receiveMessage(successHandler, errorHandler);
               })
-              .catch((error) => {
-                error(error);
+              .catch((err) => {
+                console.error(err);
                 setTimeout(() => {
                   receiveMessage(successHandler, errorHandler);
                 }, 20000);
