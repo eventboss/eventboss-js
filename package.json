@@ -1,6 +1,6 @@
 {
   "name": "eventboss",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Eventboss",
   "main": "index.js",
   "repository": "https://github.com/AirHelp/eventboss-js",
